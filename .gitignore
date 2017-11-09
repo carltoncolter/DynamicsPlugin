@@ -3,3 +3,8 @@
 ################################################################################
 
 /DynamicsPlugin/obj
+/DynamicsPlugin.Tests/bin/Debug
+/DynamicsPlugin.Tests/obj/Debug
+/packages
+/.vs
+/DynamicsPlugin/bin/Debug
