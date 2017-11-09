@@ -14,14 +14,15 @@ namespace DynamicsPlugin.Common
     [Serializable]
     public abstract class PluginBase : IPlugin
     {
+        public virtual ConfigType ConfigType => ConfigType.Json;
+        public virtual bool AutoLoadConfig => true;
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="PluginBase" /> class.
         /// </summary>
         public PluginBase()
         {
         }
-
-        public XDocument StringMap { get; set; }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PluginBase" /> class.
@@ -31,10 +32,21 @@ namespace DynamicsPlugin.Common
             UnsecureConfigString = unsecureString;
             SecureConfigString = secureString;
 
-            LoadConfig();
+            // load config if configured for autoload (default is yes & json)
+            if (!AutoLoadConfig) return;
+
+            switch (ConfigType)
+            {
+                case ConfigType.Json:
+                    LoadJsonConfig();
+                    break;
+                case ConfigType.Xml:
+                    LoadXmlConfig();
+                    break;
+            }
         }
 
-        private void LoadConfig()
+        public void LoadJsonConfig()
         {
             var config = ConfigString;
             ErrorLoadingConfig = null;
@@ -42,7 +54,24 @@ namespace DynamicsPlugin.Common
 
             try
             {
-                Config = PluginConfig.Deserialize<PluginConfig>(config);
+                Config = JsonConfig.Deserialize<JsonConfig>(config);
+            }
+            catch (Exception ex)
+            {
+                // Error is captured and logged during execute trace.
+                ErrorLoadingConfig = ex.Message;
+            }
+        }
+
+        public void LoadXmlConfig()
+        {
+            var config = ConfigString;
+            ErrorLoadingConfig = null;
+            if (String.IsNullOrEmpty(config)) return;
+
+            try
+            {
+                Config = XmlConfig.Deserialize<XmlConfig>(config);
             }
             catch (Exception ex)
             {
@@ -53,7 +82,7 @@ namespace DynamicsPlugin.Common
 
         private string ErrorLoadingConfig { get; set; }
 
-        public PluginConfig Config { get; set; }
+        public IPluginConfig Config { get; set; }
 
         /// <summary>
         ///     Gets or sets the name of the child class.

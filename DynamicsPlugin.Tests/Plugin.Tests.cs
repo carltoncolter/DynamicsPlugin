@@ -50,28 +50,15 @@ namespace DynamicsPlugin.Tests
                 #endregion
 
                 string exceptionOccurred = null;
-                try
-                {
-                    #region arrange - given with pipeline
 
-                    // ReSharper disable once UnusedVariable - It is bound to pipeline - it is used
-                    var contextConfig = new ContextConfigurator(pipeline);
+                #region arrange - given with pipeline
+                // ReSharper disable once UnusedVariable - It is bound to pipeline - it is used
+                var contextConfig = new ContextConfigurator(pipeline);
+                #endregion
 
-                    #endregion
-
-                    #region act - when
-
-                    pipeline.Execute(_plugin);
-
-                    #endregion
-                }
-                catch (Exception ex)
-                {
-                    exceptionOccurred = ex.Message;
-                    if (ex.InnerException != null)
-                        exceptionOccurred += "  Inner Exception: " + ex.InnerException.Message;
-                    Trace(exceptionOccurred);
-                }
+                #region act - when
+                pipeline.Execute(_plugin);
+                #endregion
 
                 #region assert - then
 
@@ -99,6 +86,8 @@ namespace DynamicsPlugin.Tests
             using (var pipeline = new PluginPipeline(FakeMessageNames.Create, FakeStages.PreOperation, target))
             {
                 string exceptionOccurred = null;
+
+                //Wrapped in try catch because a failure is expected.
                 try
                 {
                     #region arrange - given with pipeline
@@ -143,6 +132,7 @@ namespace DynamicsPlugin.Tests
             using (var pipeline = new PluginPipeline(FakeMessageNames.Update, FakeStages.PreOperation, target))
             {
                 string exceptionOccurred = null;
+                //Wrapped in try catch because a failure is expected.
                 try
                 {
                     #region arrange - given with pipeline
@@ -186,6 +176,7 @@ namespace DynamicsPlugin.Tests
             using (var pipeline = new PluginPipeline(FakeMessageNames.Delete, FakeStages.PreOperation, target))
             {
                 string exceptionOccurred = null;
+                //Wrapped in try catch because a failure is expected.
                 try
                 {
                     #region arrange - given with pipeline

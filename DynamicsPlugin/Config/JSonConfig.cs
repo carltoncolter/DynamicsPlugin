@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 namespace DynamicsPlugin.Common
 {
     [JsonObject(MemberSerialization.OptIn)]
-    public class PluginConfig : IEnumerable<PluginConfig.ConfigSetting>
+    public partial class JsonConfig : IEnumerable<ConfigSetting>, IPluginConfig
     {
-        public PluginConfig()
+        public JsonConfig()
         {
             Settings = new List<ConfigSetting>();
         }
@@ -57,16 +57,6 @@ namespace DynamicsPlugin.Common
                 NullValueHandling = NullValueHandling.Ignore,
                 MissingMemberHandling = MissingMemberHandling.Ignore
             });
-        }
-
-        [JsonObject(MemberSerialization.OptIn)]
-        public class ConfigSetting
-        {
-            [JsonProperty("name")]
-            public string Name { get; set; }
-
-            [JsonProperty("value")]
-            public string Value { get; set; }
         }
     }
 }

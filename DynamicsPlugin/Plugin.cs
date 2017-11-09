@@ -10,6 +10,10 @@ namespace DynamicsPlugin
     [Serializable]
     public class Plugin : PluginBase
     {
+        /*
+         * Override AutoLoadConfig to false if you do not want to autoload the config 
+         * Config Files are built in to the base class to handle both json and xml config files.
+         */
         #region constructors
         public Plugin() : base()
         { }

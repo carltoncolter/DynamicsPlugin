@@ -59,7 +59,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\PluginConfig.cs" />
+    <Compile Include="Config\ConfigSetting.cs" />
+    <Compile Include="Config\IPluginConfig.cs" />
+    <Compile Include="Config\ConfigType.cs" />
+    <Compile Include="Config\XmlConfig.cs" />
+    <Compile Include="Config\JsonConfig.cs" />
     <Compile Include="DynamicsPlugin.Common\Constants.cs" />
     <Compile Include="DynamicsPlugin.Common\ILocalPluginContext.cs" />
     <Compile Include="DynamicsPlugin.Common\LocalPluginContext.cs" />
