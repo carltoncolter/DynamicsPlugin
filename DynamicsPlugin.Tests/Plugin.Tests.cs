@@ -10,8 +10,10 @@ namespace DynamicsPlugin.Tests
     public class PluginTests
     {
         #region Test Settings
+
         private readonly string _unsecureConfig = "";
         private readonly string _secureConfig = "";
+
         #endregion
 
         #region Success Tests
@@ -31,7 +33,7 @@ namespace DynamicsPlugin.Tests
             {
                 //pipelines have to have the arrange and any inner asserts as part of them if you are attempting to
                 //check a child entity
-
+                var p = new PluginContainer<Plugin>()
                 #region pipeline responses and tests
 
                 pipeline.FakeService.ExpectRetrieve((retrieveEntityName, retrieveEntityId, retrieveColumnSet) =>
@@ -159,7 +161,7 @@ namespace DynamicsPlugin.Tests
                 #endregion
             }
 
-            
+
         }
 
         [TestMethod]
@@ -219,7 +221,7 @@ namespace DynamicsPlugin.Tests
             using (var pipeline = new PluginPipeline(FakeMessageNames.Create, FakeStages.PreOperation, target))
             using (var plugin = new PluginContainer<Plugin>(true, _unsecureConfig, _secureConfig))
             {
-                
+
                 #region arrange - given with pipeline
 
                 SetPipelineDefaults(pipeline);
@@ -242,7 +244,7 @@ namespace DynamicsPlugin.Tests
                 pipeline.Execute(plugin);
 
                 #endregion
-                
+
                 #region assert - then
 
 

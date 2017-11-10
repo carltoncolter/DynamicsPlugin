@@ -11,23 +11,39 @@ using Microsoft.Xrm.Sdk;
 
 namespace DynamicsPlugin.Tests
 {
+    /// <summary>
+    /// A Plugin Container for <typeparamref name="T"/>
+    /// </summary>
+    /// <typeparam name="T">IPlugin: The plugin to run inside the container</typeparam>
     internal class PluginContainer<T> : MarshalByRefObject, IDisposable, IPlugin where T : IPlugin
     {
         private const string DomainSuffix = "Sandbox";
-        
 
-        public PluginContainer() : this(false, null, null)
+        /// <inheritdoc />
+        public PluginContainer() : this(null, null)
         {
-
         }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Create a container to run a non-sandboxed plugin (i.e. fully trusted)
+        /// </summary>
         public PluginContainer(string unsecureConfig, string secureConfig) : this(false, unsecureConfig, secureConfig)
         {
-
         }
+
+        /// <inheritdoc />
         public PluginContainer(bool isSandboxed): this(isSandboxed, null, null)
         {
-
         }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Create a container to run a plugin
+        /// </summary>
+        /// <param name="isSandboxed">True for the container to run in sandbox mode, false to run fully trusted</param>
+        /// <param name="unsecureConfig">Unsecure configuration string</param>
+        /// <param name="secureConfig">Secure configuration string</param>
         public PluginContainer(bool isSandboxed, string unsecureConfig, string secureConfig)
         {
             if (isSandboxed)
@@ -87,7 +103,14 @@ namespace DynamicsPlugin.Tests
             }
         }
 
+        /// <summary>
+        /// The Sandbox AppDomain to execute the plugin
+        /// </summary>
         public AppDomain PluginAppDomain { get; private set; }
+
+        /// <summary>
+        /// The instance of the plugin
+        /// </summary>
         public T Instance { get; private set; }
 
         private T Create(string unsecureConfig, string secureConfig)
@@ -106,6 +129,7 @@ namespace DynamicsPlugin.Tests
         }
 
         #region IDisposable Support
+        //Implementing IDisposable Pattern: https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/dispose-pattern
         private bool _disposed; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
@@ -130,7 +154,9 @@ namespace DynamicsPlugin.Tests
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
         }
+        #endregion
 
+        #region IPlugin Supporrt
         void IPlugin.Execute(IServiceProvider serviceProvider)
         {
             Instance.Execute(serviceProvider);

@@ -21,5 +21,7 @@
         public const string EnteringPlugin = "Entered {0}.Execute()";
 
         public const string ExitingPlugin = "Exiting {0}.Execute()";
+
+        public const string ErrorLoadingConfig = "Error Loading Configuration: {0}";
     }
 }
