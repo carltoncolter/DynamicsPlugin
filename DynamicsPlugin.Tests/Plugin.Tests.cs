@@ -25,11 +25,12 @@ namespace DynamicsPlugin.Tests
             #region arrange - given
 
             var entityName = "account";
-            var target = new Entity(entityName) {Id = Guid.NewGuid()};
+            var target = new Entity(entityName) { Id = Guid.NewGuid() };
 
             #endregion
 
             using (var pipeline = new PluginPipeline(FakeMessageNames.Create, FakeStages.PreOperation, target))
+            using (var plugin = new PluginContainer<Plugin>(_unsecureConfig, _secureConfig))
             {
                 //pipelines have to have the arrange and any inner asserts as part of them if you are attempting to
                 //check a child entity
@@ -52,12 +53,11 @@ namespace DynamicsPlugin.Tests
                 string exceptionOccurred = null;
 
                 #region arrange - given with pipeline
-                // ReSharper disable once UnusedVariable - It is bound to pipeline - it is used
-                var contextConfig = new ContextConfigurator(pipeline);
+                SetPipelineDefaults(pipeline);
                 #endregion
 
                 #region act - when
-                pipeline.Execute(_plugin);
+                pipeline.Execute(plugin);
                 #endregion
 
                 #region assert - then
@@ -84,6 +84,7 @@ namespace DynamicsPlugin.Tests
             #endregion
 
             using (var pipeline = new PluginPipeline(FakeMessageNames.Create, FakeStages.PreOperation, target))
+            using (var plugin = new PluginContainer<Plugin>(_unsecureConfig, _secureConfig))
             {
                 string exceptionOccurred = null;
 
@@ -92,14 +93,13 @@ namespace DynamicsPlugin.Tests
                 {
                     #region arrange - given with pipeline
 
-                    // ReSharper disable once UnusedVariable - It is bound to pipeline - it is used
-                    var contextConfig = new ContextConfigurator(pipeline);
+                    SetPipelineDefaults(pipeline);
 
                     #endregion
 
                     #region act - when
 
-                    pipeline.Execute(_plugin);
+                    pipeline.Execute(plugin);
 
                     #endregion
                 }
@@ -111,7 +111,7 @@ namespace DynamicsPlugin.Tests
 
                 #region assert - then
 
-                Assert.AreEqual(string.Format(ResponseMessages.InvalidEntity, entityName, _plugin.PluginName),
+                Assert.AreEqual(string.Format(ResponseMessages.InvalidEntity, entityName, plugin.Instance.PluginName),
                     exceptionOccurred);
 
                 #endregion
@@ -130,6 +130,7 @@ namespace DynamicsPlugin.Tests
             #endregion
 
             using (var pipeline = new PluginPipeline(FakeMessageNames.Update, FakeStages.PreOperation, target))
+            using (var plugin = new PluginContainer<Plugin>(_unsecureConfig, _secureConfig))
             {
                 string exceptionOccurred = null;
                 //Wrapped in try catch because a failure is expected.
@@ -137,14 +138,13 @@ namespace DynamicsPlugin.Tests
                 {
                     #region arrange - given with pipeline
 
-                    // ReSharper disable once UnusedVariable - It is bound to pipeline - it is used
-                    var contextConfig = new ContextConfigurator(pipeline);
+                    SetPipelineDefaults(pipeline);
 
                     #endregion
 
                     #region act - when
 
-                    pipeline.Execute(_plugin);
+                    pipeline.Execute(plugin);
 
                     #endregion
                 }
@@ -156,11 +156,13 @@ namespace DynamicsPlugin.Tests
 
                 #region assert - then
 
-                Assert.AreEqual(string.Format(ResponseMessages.InvalidEntity, entityName, _plugin.PluginName),
+                Assert.AreEqual(string.Format(ResponseMessages.InvalidEntity, entityName, plugin.Instance.PluginName),
                     exceptionOccurred);
 
                 #endregion
             }
+
+            
         }
 
         [TestMethod]
@@ -168,12 +170,13 @@ namespace DynamicsPlugin.Tests
         {
             #region arrange - given
 
-            var entityName = "==UnkownEntity==";
+            var entityName = "account";
             var target = new Entity(entityName) { Id = Guid.NewGuid() };
 
             #endregion
 
             using (var pipeline = new PluginPipeline(FakeMessageNames.Delete, FakeStages.PreOperation, target))
+            using (var plugin = new PluginContainer<Plugin>(_unsecureConfig, _secureConfig))
             {
                 string exceptionOccurred = null;
                 //Wrapped in try catch because a failure is expected.
@@ -181,14 +184,13 @@ namespace DynamicsPlugin.Tests
                 {
                     #region arrange - given with pipeline
 
-                    // ReSharper disable once UnusedVariable - It is bound to pipeline - it is used
-                    var contextConfig = new ContextConfigurator(pipeline);
+                    SetPipelineDefaults(pipeline);
 
                     #endregion
 
                     #region act - when
 
-                    pipeline.Execute(_plugin);
+                    pipeline.Execute(plugin);
 
                     #endregion
                 }
@@ -200,72 +202,61 @@ namespace DynamicsPlugin.Tests
 
                 #region assert - then
 
-                Assert.AreEqual(string.Format(ResponseMessages.InvalidMessageName, _plugin.PluginName),
+                Assert.AreEqual(string.Format(ResponseMessages.InvalidMessageName, plugin.Instance.PluginName),
                     exceptionOccurred);
 
                 #endregion
             }
         }
 
-        #endregion
+        [TestMethod]
+        public void CatchInvalidSandboxWebAccess()
+        {
+            #region arrange - given
 
-        #region Private Test Variables
+            var entityName = "account";
+            var target = new Entity(entityName) { Id = Guid.NewGuid() };
 
-        private IOrganizationService _fakeService;
-        private static PluginSandbox<Plugin> _sandbox;
-        private Plugin _plugin;
+            #endregion
 
+            using (var pipeline = new PluginPipeline(FakeMessageNames.Create, FakeStages.PreOperation, target))
+            using (var plugin = new PluginContainer<Plugin>(true, _unsecureConfig, _secureConfig))
+            {
+                
+                #region arrange - given with pipeline
+
+                SetPipelineDefaults(pipeline);
+
+                pipeline.FakeService.ExpectRetrieve((retrieveEntityName, retrieveEntityId, retrieveColumnSet) =>
+                {
+                    return new Entity("account");
+                }).ExpectCreate(createEntity =>
+                {
+                    // test in create call
+                    Assert.IsTrue(createEntity.LogicalName.Equals("annotation",
+                        StringComparison.InvariantCultureIgnoreCase));
+                    return Guid.NewGuid();
+                });
+
+                #endregion
+
+                #region act - when
+
+                pipeline.Execute(plugin);
+
+                #endregion
+                
+                #region assert - then
+
+
+                #endregion
+            }
+        }
         #endregion
 
         #region Test Setup/Configuration Methods
 
         public TestContext TestContext { get; set; }
-
-        /// <summary>
-        ///     Called once prior to executing any test in the class
-        /// </summary>
-        [ClassInitialize]
-        public static void InitializeClass(TestContext context)
-        {
-            if (_testUsingSandbox) _sandbox = new PluginSandbox<Plugin>();
-        }
-
-        /// <summary>
-        ///     Called once to cleanup the class
-        /// </summary>
-        [ClassCleanup]
-        public static void CleanupClass()
-        {
-        }
-
-        /// <summary>
-        ///     Called prior to executing each test method
-        /// </summary>
-        [TestInitialize]
-        public void InitializeTest()
-        {
-            _fakeService = new FakeOrganzationService();
-            _plugin = _testUsingSandbox
-                ? _sandbox.Create(_unsecureConfig, _secureConfig)
-                : new Plugin(_unsecureConfig, _secureConfig);
-
-            //_plugin = new Plugin(_unsecureConfig, _secureConfig);
-        }
-
-        /// <summary>
-        ///     Called after executing each test method
-        /// </summary>
-        [TestCleanup]
-        public void CleanupTest()
-        {
-            //fakeService cleaned by Garbage Collector
-            _plugin = null;
-            if (_sandbox != null)
-            {
-                _sandbox.Dispose();
-                _sandbox = null;
-            }
-        }
 
         #region Helper Methods
 
@@ -274,6 +265,25 @@ namespace DynamicsPlugin.Tests
             TestContext.WriteLine(message);
             Console.WriteLine(message);
             System.Diagnostics.Trace.WriteLine(message);
+        }
+
+        private void SetPipelineDefaults(PluginPipeline pipeline)
+        {
+            // Set the default values
+            //pipeline.PluginExecutionContext.Depth = 1;
+            pipeline.UserId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+            pipeline.InitiatingUserId = pipeline.UserId;
+            pipeline.OrganizationId = Guid.Parse("c0000000-c000-c000-c000-c00000000000");
+            pipeline.OrganizationName = "TestOrganization";
+            pipeline.CorrelationId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+            pipeline.BusinessUnitId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+            pipeline.RequestId = Guid.NewGuid();
+            pipeline.OperationId = Guid.NewGuid();
+            pipeline.OperationCreatedOn = DateTime.Now;
+            pipeline.IsolationMode = PluginAssemblyIsolationMode.Sandbox;
+            pipeline.IsExecutingOffline = false;
+            pipeline.IsInTransaction = false;
+            pipeline.Mode = SdkMessageProcessingStepMode.Synchronous;
         }
 
         #endregion
