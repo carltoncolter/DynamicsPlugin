@@ -10,11 +10,8 @@ namespace DynamicsPlugin.Tests
     public class PluginTests
     {
         #region Test Settings
-
-        private static readonly bool _testUsingSandbox = true;
         private readonly string _unsecureConfig = "";
         private readonly string _secureConfig = "";
-
         #endregion
 
         #region Success Tests
@@ -30,7 +27,7 @@ namespace DynamicsPlugin.Tests
             #endregion
 
             using (var pipeline = new PluginPipeline(FakeMessageNames.Create, FakeStages.PreOperation, target))
-            using (var plugin = new PluginContainer<Plugin>(_unsecureConfig, _secureConfig))
+            using (var plugin = new PluginContainer<Plugin>(true, _unsecureConfig, _secureConfig))
             {
                 //pipelines have to have the arrange and any inner asserts as part of them if you are attempting to
                 //check a child entity
@@ -289,7 +286,5 @@ namespace DynamicsPlugin.Tests
         #endregion
 
         #endregion
-
-        
     }
 }

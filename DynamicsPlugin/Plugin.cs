@@ -29,8 +29,8 @@ namespace DynamicsPlugin
         public override void Execute(ILocalPluginContext context)
         {
             // Try and access the file system - this isn't allowed in sandboxed plugin
-            var sw = new StreamWriter("C:\\test.txt");
-            sw.WriteLine("ouch");
+            //var sw = new StreamWriter("C:\\test.txt");
+            //sw.WriteLine("ouch");
 
             var account = context.OrganizationService.Retrieve("account", Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new ColumnSet(true));
 
