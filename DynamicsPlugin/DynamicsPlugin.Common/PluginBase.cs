@@ -140,8 +140,8 @@ namespace DynamicsPlugin.Common
         ///     Gets the AutoLoadConfig Flag.
         /// </summary>
         /// <value>The AutoLoadConfig Flag.</value>
-        /// <remarks>Default is <c>false</c>. Can be overridden to be set to <c>true</c>.</remarks>
-        public virtual bool AutoLoadConfig => false;
+        /// <remarks>Default is <c>true</c>. Can be overridden to be set to <c>false</c>.</remarks>
+        public virtual bool AutoLoadConfig => true;
 
         /// <summary>
         ///     Gets the plugin configuration.
