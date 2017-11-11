@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.ServiceModel;
+using DynamicsPlugin.Common.Attributes;
 using DynamicsPlugin.Common.Constants;
 using Microsoft.Xrm.Sdk;
 
@@ -51,7 +54,9 @@ namespace DynamicsPlugin.Common
 
             #region Load Config
 
-            if (AutoLoadConfig)
+            var configAttributeSettings = AttributeExtensions.GetCrmPluginConfigurationAttribute(GetType());
+            ConfigType = configAttributeSettings.ConfigType;
+            if (configAttributeSettings.AutoLoad)
                 try
                 {
                     LoadConfig();
@@ -63,24 +68,31 @@ namespace DynamicsPlugin.Common
 
             #endregion
 
+            var registrationAttributes = AttributeExtensions.GetCrmPluginRegistrationAttributes(GetType()).ToList();
+            var execContext = localContext.PluginExecutionContext;
+
             #region Validate Primary EntityName (if specified)
 
-            if (!string.IsNullOrEmpty(RequiredPrimaryEntityLogicalName) &&
-                !RequiredPrimaryEntityLogicalName.Equals(localContext.PluginExecutionContext.PrimaryEntityName,
-                    StringComparison.InvariantCultureIgnoreCase))
+            if (!registrationAttributes.IsValidEntity(execContext.PrimaryEntityName))
                 throw new InvalidPluginExecutionException(
-                    string.Format(ResponseMessages.InvalidEntity, localContext.PluginExecutionContext.PrimaryEntityName,
+                    string.Format(ResponseMessages.InvalidEntity, execContext.PrimaryEntityName,
                         PluginName));
 
             #endregion
 
             #region Validate Message Names
 
-            if (!ValidMessageNames.Contains(
-                localContext.PluginExecutionContext.MessageName,
-                StringComparer.InvariantCultureIgnoreCase))
+            if (!registrationAttributes.IsValidMessageName(execContext.MessageName))
                 throw new InvalidPluginExecutionException(
-                    string.Format(ResponseMessages.InvalidMessageName, PluginName));
+                    string.Format(ResponseMessages.InvalidMessageName, execContext.MessageName, PluginName));
+
+            #endregion
+
+            #region Validate Message Name and Entity Name combination
+
+            if (!registrationAttributes.IsValidMessageAndEntityName(execContext.MessageName, execContext.PrimaryEntityName))
+                throw new InvalidPluginExecutionException(
+                    string.Format(ResponseMessages.InvalidMessageEntityCombination, execContext.MessageName, execContext.PrimaryEntityName, PluginName));
 
             #endregion
 
@@ -90,7 +102,7 @@ namespace DynamicsPlugin.Common
                 Execute(localContext);
                 // now exit
 
-                if (ForceError)
+                if (configAttributeSettings.ForceErrorWhenComplete)
                     throw new InvalidPluginExecutionException(string.Format(ResponseMessages.PluginAborted,
                         PluginName));
             }
@@ -134,14 +146,7 @@ namespace DynamicsPlugin.Common
         /// </summary>
         /// <value>The configuration type.</value>
         /// <example>ConfigType.Json</example>
-        public virtual ConfigType ConfigType => ConfigType.Json;
-
-        /// <summary>
-        ///     Gets the AutoLoadConfig Flag.
-        /// </summary>
-        /// <value>The AutoLoadConfig Flag.</value>
-        /// <remarks>Default is <c>true</c>. Can be overridden to be set to <c>false</c>.</remarks>
-        public virtual bool AutoLoadConfig => true;
+        private ConfigType ConfigType { get; set; }
 
         /// <summary>
         ///     Gets the plugin configuration.
@@ -184,29 +189,6 @@ namespace DynamicsPlugin.Common
         /// </summary>
         /// <value>The name of the child class.</value>
         public virtual string PluginName => GetType().Name;
-
-        /// <summary>
-        ///     Gets or sets the array of valid message names.
-        /// </summary>
-        /// <value>The array of valid message names.</value>
-        public abstract string[] ValidMessageNames { get; }
-
-        /// <summary>
-        ///     Gets or sets the required primary entity's logical name.
-        /// </summary>
-        /// <value>The required primary entity's logical name.</value>
-        /// <remarks>The default is empty, which bypasses checking the primary entity.</remarks>
-        public virtual string RequiredPrimaryEntityLogicalName => "";
-
-        /// <summary>
-        ///     Gets or sets the ForceError Flag.
-        /// </summary>
-        /// <value>The ForceError Flag.</value>
-        /// <remarks>
-        ///     This will cause an error to be thrown after the plugin is executed successfully.
-        ///     This can be useful when testing in a live CRM system.
-        /// </remarks>
-        public virtual bool ForceError => false;
 
         #endregion
 

@@ -33,7 +33,7 @@ namespace DynamicsPlugin.Tests
             {
                 //pipelines have to have the arrange and any inner asserts as part of them if you are attempting to
                 //check a child entity
-                var p = new PluginContainer<Plugin>()
+                
                 #region pipeline responses and tests
 
                 pipeline.FakeService.ExpectRetrieve((retrieveEntityName, retrieveEntityId, retrieveColumnSet) =>
@@ -201,7 +201,7 @@ namespace DynamicsPlugin.Tests
 
                 #region assert - then
 
-                Assert.AreEqual(string.Format(ResponseMessages.InvalidMessageName, plugin.Instance.PluginName),
+                Assert.AreEqual(string.Format(ResponseMessages.InvalidMessageName, FakeMessageNames.Delete, plugin.Instance.PluginName),
                     exceptionOccurred);
 
                 #endregion

@@ -6,12 +6,17 @@
 
         public const string InvalidEntity = "The entity {0} is not support by {1}.";
 
-        public const string InvalidMessageName = "The message name is not support by {0}.";
+        public const string InvalidMessageName = "The message \"{0}\" is not support by {1}.";
+
+        public const string InvalidMessageEntityCombination =
+            "The message \"{0}\" is not supported for entity \"{1}\" by {2}.";
 
         public const string OrganizationServiceFault =
             "There was an organization service fault.  {0} is unable to execute successfully.";
 
         public const string PluginAborted = "{0} Aborted.  Forced error at the end of execution.";
+
+        public const string DuplicatePluginStepNames = "Found types with duplicate attributes of the same name(s) {0}";
     }
 
     public static class TraceMessages

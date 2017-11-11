@@ -66,6 +66,9 @@
     <Compile Include="Config\ConfigType.cs" />
     <Compile Include="Config\XmlConfig.cs" />
     <Compile Include="Config\JsonConfig.cs" />
+    <Compile Include="CrmPluginRegistrationAttribute.cs" />
+    <Compile Include="DynamicsPlugin.Common\Attributes\AttributeExtensions.cs" />
+    <Compile Include="DynamicsPlugin.Common\Attributes\CrmPluginConfigurationAttribute.cs" />
     <Compile Include="DynamicsPlugin.Common\Constants.cs" />
     <Compile Include="DynamicsPlugin.Common\ILocalPluginContext.cs" />
     <Compile Include="DynamicsPlugin.Common\LocalPluginContext.cs" />
@@ -77,6 +80,14 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="spkl.json" />
+    <None Include="spkl\deploy-plugins.bat" />
+    <None Include="spkl\deploy-webresources.bat" />
+    <None Include="spkl\deploy-workflows.bat" />
+    <None Include="spkl\earlybound.bat" />
+    <None Include="spkl\instrument-plugin-code.bat" />
+    <None Include="spkl\pack+import.bat" />
+    <None Include="spkl\unpack.bat" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
 using System.Text.RegularExpressions;
+using DynamicsPlugin.Common.Attributes;
 using Microsoft.Xrm.Sdk;
 
 namespace DynamicsPlugin.Tests
@@ -26,10 +28,16 @@ namespace DynamicsPlugin.Tests
 
         /// <inheritdoc />
         /// <summary>
-        /// Create a container to run a non-sandboxed plugin (i.e. fully trusted)
+        /// Create a container to run a plugin.
+        /// Auto-detects sandbox mode plugins and tests them using Sandbox mode if the IsolationMode is Sandbox
         /// </summary>
-        public PluginContainer(string unsecureConfig, string secureConfig) : this(false, unsecureConfig, secureConfig)
+        /// <param name="unsecureConfig">Unsecure configuration string</param>
+        /// <param name="secureConfig">Secure configuration string</param>
+        public PluginContainer(string unsecureConfig, string secureConfig)
         {
+            var sandbox = AttributeExtensions.GetCrmPluginRegistrationAttributes(typeof(T))
+                .Any(a => a.IsolationMode == IsolationModeEnum.Sandbox);
+            SetupContainer(sandbox, unsecureConfig, secureConfig);
         }
 
         /// <inheritdoc />
@@ -45,6 +53,11 @@ namespace DynamicsPlugin.Tests
         /// <param name="unsecureConfig">Unsecure configuration string</param>
         /// <param name="secureConfig">Secure configuration string</param>
         public PluginContainer(bool isSandboxed, string unsecureConfig, string secureConfig)
+        {
+            SetupContainer(isSandboxed, unsecureConfig, secureConfig);
+        }
+
+        private void SetupContainer(bool isSandboxed, string unsecureConfig, string secureConfig)
         {
             if (isSandboxed)
             {
@@ -78,12 +91,12 @@ namespace DynamicsPlugin.Tests
                 ps.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
                 ps.AddPermission(new FileIOPermission(PermissionState.None));
                 ps.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.RestrictedMemberAccess));
-                
+
                 //RegEx pattern taken from: https://msdn.microsoft.com/en-us/library/gg334752.aspx
                 ps.AddPermission(new WebPermission(NetworkAccess.Connect,
                     new Regex(
                         @"^http[s]?://(?!((localhost[:/])|(\[.*\])|([0-9]+[:/])|(0x[0-9a-f]+[:/])|(((([0-9]+)|(0x[0-9A-F]+))\.){3}(([0-9]+)|(0x[0-9A-F]+))[:/]))).+")));
-                
+
                 // We don't need to add these, but it is important to note that there is no access to the following
                 ps.AddPermission(new NetworkInformationPermission(NetworkInformationAccess.None));
                 ps.AddPermission(new EnvironmentPermission(PermissionState.None));
@@ -98,8 +111,7 @@ namespace DynamicsPlugin.Tests
             else
             {
                 // Just create a non-sandboxed plugin
-                Instance = (T)Activator.CreateInstance(typeof(T), unsecureConfig, secureConfig);
-
+                Instance = (T) Activator.CreateInstance(typeof(T), unsecureConfig, secureConfig);
             }
         }
 
