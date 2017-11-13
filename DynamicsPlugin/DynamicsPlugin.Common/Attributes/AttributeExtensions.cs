@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using DynamicsPlugin.Common.Constants;
-using DynamicsPlugin.DynamicsPlugin.Common.Attributes;
 
 namespace DynamicsPlugin.Common.Attributes
 {

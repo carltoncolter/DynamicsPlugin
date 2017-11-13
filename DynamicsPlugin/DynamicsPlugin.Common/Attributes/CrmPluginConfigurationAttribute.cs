@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DynamicsPlugin.Common;
 
-namespace DynamicsPlugin.DynamicsPlugin.Common.Attributes
+namespace DynamicsPlugin.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class CrmPluginConfigurationAttribute : Attribute

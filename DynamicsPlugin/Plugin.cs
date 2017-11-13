@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using DynamicsPlugin.Common;
-using DynamicsPlugin.DynamicsPlugin.Common.Attributes;
+using DynamicsPlugin.Common.Attributes;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 
