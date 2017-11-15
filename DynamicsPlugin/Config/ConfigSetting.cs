@@ -3,16 +3,16 @@ using Newtonsoft.Json;
 
 namespace DynamicsPlugin.Common
 {
-    [XmlType(AnonymousType = true)]
+    [XmlType(TypeName = "setting")]
     [XmlRoot(Namespace = "", IsNullable = false)]
     [JsonObject(MemberSerialization.OptIn)]
     public class ConfigSetting
     {
-        [XmlElement("name")]
+        [XmlAttribute("name")]
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [XmlElement("value")]
+        [XmlText]
         [JsonProperty("value")]
         public string Value { get; set; }
     }

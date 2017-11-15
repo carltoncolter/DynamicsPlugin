@@ -17,8 +17,14 @@ namespace DynamicsPlugin.Common
             Settings = new List<ConfigSetting>();
         }
 
-        [XmlElement("setting", typeof(ConfigSetting))]
+        [XmlElement("settings")]
         public List<ConfigSetting> Settings { get; set; }
+
+        public void Add(ConfigSetting item)
+        {
+            if (Settings==null) Settings = new List<ConfigSetting>();
+            Settings.Add(item);
+        }
 
         public ConfigSetting this[string name]
         {
@@ -66,12 +72,26 @@ namespace DynamicsPlugin.Common
             return ms.ToArray();
         }
 
-        public static T Deserialize<T>(string xml)
+        public static T Deserialize<T>(string xml) where T:XmlConfig
         {
             var byteArray = ConvertStringToBytes(xml);
             var xs = new XmlSerializer(typeof(T));
             var ms = new MemoryStream(byteArray);
             return (T)xs.Deserialize(ms);
+        }
+
+        public static string Serialize<T>(T obj) where T:XmlConfig
+        {
+            string response = null;
+            var xs = new XmlSerializer(typeof(T));
+            using (var ms = new MemoryStream())
+            {
+                xs.Serialize(ms, obj);
+                ms.Position = 0;
+                var sr = new StreamReader(ms);
+                response = sr.ReadToEnd();
+            }
+            return response;
         }
     }
 }

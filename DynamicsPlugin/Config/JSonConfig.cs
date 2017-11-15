@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace DynamicsPlugin.Common
@@ -49,14 +50,24 @@ namespace DynamicsPlugin.Common
             return GetEnumerator();
         }
 
-
-        public static T Deserialize<T>(string json)
+        public static T Deserialize<T>(string json) where T:JsonConfig
         {
-            return JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings
+            return JsonConvert.DeserializeObject<T>(CleanJson(json), new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
-                MissingMemberHandling = MissingMemberHandling.Ignore
+                MissingMemberHandling = MissingMemberHandling.Ignore, 
             });
+        }
+
+        public static string Serialize<T>(T obj) => JsonConvert.SerializeObject(obj);
+
+        private static string CleanJson(string json)
+        {
+            var pattern = new Regex(@"({|,)(?:\s*)(?:')?([A-Za-z_$\.][A-Za-z0-9_\-\.$]*)(?:')?(?:\s*)(:\s*)",
+                RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline);
+
+            json = pattern.Replace(json, "$1\"$2\":");
+            return json;
         }
     }
 }

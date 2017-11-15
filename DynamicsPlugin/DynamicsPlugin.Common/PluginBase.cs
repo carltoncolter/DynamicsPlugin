@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.ServiceModel;
 using DynamicsPlugin.Common.Attributes;
 using DynamicsPlugin.Common.Constants;
@@ -14,6 +13,7 @@ namespace DynamicsPlugin.Common
     ///     Base class for all plug-in classes.
     /// </summary>
     [Serializable]
+    [ExcludeFromCodeCoverage]
     public abstract class PluginBase : IPlugin
     {
         /// <summary>

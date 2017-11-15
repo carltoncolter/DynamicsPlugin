@@ -1,11 +1,12 @@
 ﻿#if !SCRIPTSHARP
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
+[ExcludeFromCodeCoverage]
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
 public class CrmPluginRegistrationAttribute : Attribute
 {

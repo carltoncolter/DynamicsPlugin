@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DynamicsPlugin.Common;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DynamicsPlugin.Common.Attributes
 {
+    [ExcludeFromCodeCoverage]
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class CrmPluginConfigurationAttribute : Attribute
     {
@@ -15,6 +12,7 @@ namespace DynamicsPlugin.Common.Attributes
             ConfigType = ConfigType.Json;
             AutoLoad = true;
         }
+
         public ConfigType ConfigType { get; set; }
         public bool AutoLoad { get; set; }
         public bool ForceErrorWhenComplete { get; set; }
