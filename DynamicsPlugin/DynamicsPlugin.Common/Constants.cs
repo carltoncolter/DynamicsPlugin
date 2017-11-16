@@ -1,5 +1,9 @@
 ﻿namespace DynamicsPlugin.Common.Constants
 {
+    public static class ConfigMessages
+    {
+        public const string DeserializationError = "There was an error deserializing the configuration string.";
+    }
     public static class ResponseMessages
     {
         public const string NoServiceProvider = "There was no Service Provider.  {0} is unable to execute.";

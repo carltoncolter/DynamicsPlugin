@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
 using DynamicsPlugin.Common;
 using DynamicsPlugin.Common.Attributes;
 using Microsoft.Xrm.Sdk;
@@ -18,27 +18,44 @@ namespace DynamicsPlugin
         /*
          * Override AutoLoadConfig to false if you do not want to autoload the config 
          * Config Files are built in to the base class to handle both json and xml config files.
+         * 
+         * Constructors should be left empty. Any initialization code should be put into InitializePlugin
          */
+        
         #region constructors
-        public Plugin()
-        { }
 
-        public Plugin(string unsecureString, string secureString) : base(unsecureString, secureString)
-        { }
+        [ExcludeFromCodeCoverage]
+        public Plugin() { }
+
+        [ExcludeFromCodeCoverage]
+        public Plugin(string unsecureString, string secureString) : base(unsecureString, secureString) { }
+        
         #endregion
+
+        /// <inheritdoc />
+        /// <remarks>
+        /// The <c>InitializePlugin</c> method is executed whenever a new plugin object is created.
+        /// </remarks>
+        public override void InitializePlugin()
+        {
+            //TODO: Add initialization work here or remove method
+        }
 
         public override void Execute(ILocalPluginContext context)
         {
+            //TODO: Write plug-in code here.
+
+            //TODO: Remove sample code.
+            #region This is sample code that should be removed.
             // Try and access the file system - this isn't allowed in sandboxed plugin
             //var sw = new StreamWriter("C:\\test.txt");
             //sw.WriteLine("ouch");
 
-            var account = context.OrganizationService.Retrieve("account", Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new ColumnSet(true));
+            context.OrganizationService.Retrieve("account", Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new ColumnSet(true));
 
-            var note = new Entity("annotation");
-            note["description"] = "test";
+            var note = new Entity("annotation") {["description"] = "test"};
             context.OrganizationService.Create(note);
-
+            #endregion
         }
     }
 }

@@ -6,6 +6,14 @@ using Microsoft.Xrm.Sdk;
 
 namespace DynamicsPlugin.Tests
 {
+    /*
+     * PluginTests: This is the test class for the plugin.  It should cover the execution paths in
+     * the plugin that inherits from PluginBase.  There are examples in here for Success and Failure
+     * tests that don't need to be leveraged for every plugin you create. Hopefully this gives you a
+     * good starting point.  If you find that you have a test that you are using a lot for a particular
+     * type or types of plugins, then please share it with me on the github project os that we can
+     * make it available to others.
+     */
     [TestClass]
     public class PluginTests
     {

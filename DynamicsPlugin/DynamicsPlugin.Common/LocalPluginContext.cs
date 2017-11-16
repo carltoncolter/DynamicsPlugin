@@ -14,8 +14,10 @@ namespace DynamicsPlugin.Common
     }
 
     /// <summary>
-    ///     Plug-in context object.
+    ///     Defines the contextual information passed to a plug-in at run-time and the common services and methods used by
+    ///     plug-ins.
     /// </summary>
+    [ExcludeFromCodeCoverage] // This code has been tested heavily and is not likely to change much over time
     public class LocalPluginContext : ILocalPluginContext
     {
         private IServiceEndpointNotificationService _notificationService;
@@ -23,12 +25,18 @@ namespace DynamicsPlugin.Common
         private IOrganizationServiceFactory _organizationServiceFactory;
         private IPluginExecutionContext _pluginExecutionContext;
         private ITracingService _tracingService;
-        
-        
+
+
         /// <summary>
         ///     Helper object that stores the services available in this plug-in.
         /// </summary>
-        /// <param name="serviceProvider"></param>
+        /// <param name="serviceProvider">
+        ///     A container for service objects. Contains references to:
+        ///     the plug-in execution context (<c>Microsoft.Xrm.Sdk.IPluginExecutionContext)</c>), <br />
+        ///     tracing service (<c>Microsoft.Xrm.Sdk.ITracingService</c>), <br />
+        ///     organization service (<c>Microsoft.Xrm.Sdk.IOrganizationServiceFactory</c>),
+        ///     and the notification service (<c>Microsoft.Xrm.Sdk.IServiceEndpointNotificationService</c>).
+        /// </param>
         public LocalPluginContext(IServiceProvider serviceProvider)
         {
             ServiceProvider = serviceProvider;
@@ -36,55 +44,47 @@ namespace DynamicsPlugin.Common
                 throw new InvalidPluginExecutionException("serviceProvider");
         }
 
+        /// <inheritdoc />
         public IServiceProvider ServiceProvider { get; }
 
+        /// <inheritdoc />
         public IOrganizationServiceFactory OrganizationServiceFactory =>
             _organizationServiceFactory ?? (_organizationServiceFactory =
                 (IOrganizationServiceFactory) ServiceProvider.GetService(typeof(IOrganizationServiceFactory))
             );
 
-        /// <summary>
-        ///     The Microsoft Dynamics 365 organization service.
-        /// </summary>
+        /// <inheritdoc />
         public IOrganizationService OrganizationService => _organizationService ?? (_organizationService =
                                                                OrganizationServiceFactory.CreateOrganizationService(
                                                                    PluginExecutionContext.UserId));
 
-        /// <summary>
-        ///     IPluginExecutionContext contains information that describes the run-time environment in which the plug-in executes,
-        ///     information related to the execution pipeline, and entity business information.
-        /// </summary>
+        /// <inheritdoc />
         public IPluginExecutionContext PluginExecutionContext => _pluginExecutionContext ?? (_pluginExecutionContext =
                                                                      (IPluginExecutionContext) ServiceProvider
                                                                          .GetService(typeof(IPluginExecutionContext)));
 
-        /// <summary>
-        ///     Synchronous registered plug-ins can post the execution context to the Microsoft Azure Service Bus. <br />
-        ///     It is through this notification service that synchronous plug-ins can send brokered messages to the Microsoft Azure
-        ///     Service Bus.
-        /// </summary>
+        /// <inheritdoc />
         public IServiceEndpointNotificationService NotificationService =>
             _notificationService ?? (_notificationService =
                 (IServiceEndpointNotificationService) ServiceProvider.GetService(
                     typeof(IServiceEndpointNotificationService)));
 
-        /// <summary>
-        ///     Provides logging run-time trace information for plug-ins.
-        /// </summary>
+        /// <inheritdoc />
         public ITracingService TracingService => _tracingService ??
                                                  (_tracingService =
                                                      (ITracingService) ServiceProvider.GetService(
                                                          typeof(ITracingService)));
 
+        /// <inheritdoc />
         public EntityImageCollection PreEntityImages => PluginExecutionContext.PreEntityImages;
+
+        /// <inheritdoc />
         public EntityImageCollection PostEntityImages => PluginExecutionContext.PostEntityImages;
 
-        /// <summary>
-        /// GetAttributeValue gets the attribute from the target, then the post entity image, then the pre entity image
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="fieldname"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
+        /// <remarks>
+        ///     GetAttributeValue gets the attribute from the target, then the post entity image, then the pre entity image
+        /// </remarks>
         public T GetAttributeValue<T>(string fieldname)
         {
             if (PluginExecutionContext.InputParameters.Contains("Target"))
@@ -103,6 +103,7 @@ namespace DynamicsPlugin.Common
             return default(T);
         }
 
+        /// <inheritdoc />
         public T GetInputParameter<T>(string field)
         {
             if (PluginExecutionContext?.InputParameters == null ||
@@ -111,6 +112,8 @@ namespace DynamicsPlugin.Common
             return (T) PluginExecutionContext.InputParameters[field];
         }
 
+        /// <inheritdoc />
+        /// <remarks>Post entity images are checked for an image with the <c>name</c>, then pre entity images.</remarks>
         public Entity GetEntityImage(string name = null)
         {
             if (string.IsNullOrEmpty(name))
@@ -128,12 +131,7 @@ namespace DynamicsPlugin.Common
 
         #region Trace
 
-        /// <summary>
-        ///     Writes a trace message to the CRM trace log.
-        /// </summary>
-        /// <param name="cultureInfo">Culture Info.</param>
-        /// <param name="format">Message name to trace.</param>
-        /// <param name="args">Additional Arguments to put into message.</param>
+        /// <inheritdoc />
         public void Trace(CultureInfo cultureInfo, string format, params object[] args)
         {
             if (cultureInfo == null) cultureInfo = CultureInfo.InvariantCulture;
@@ -147,6 +145,7 @@ namespace DynamicsPlugin.Common
             if (PluginExecutionContext == null)
                 TracingService.Trace(message);
             else
+                // This should never happen
                 TracingService.Trace(
                     "{0}, Correlation Id: {1}, Initiating User: {2}",
                     message,
@@ -154,10 +153,7 @@ namespace DynamicsPlugin.Common
                     PluginExecutionContext.InitiatingUserId);
         }
 
-        /// <summary>
-        ///     Writes a trace message to the CRM trace log.
-        /// </summary>
-        /// <param name="exception">An OrganizationServiceFault Excception</param>
+        /// <inheritdoc />
         public void Trace(Exception exception)
         {
             // Trace the first message using the embedded Trace to get the Correlation Id and User Id out.
@@ -188,12 +184,7 @@ namespace DynamicsPlugin.Common
             Trace(new FaultException<OrganizationServiceFault>(faultException.Detail.InnerFault));
         }
 
-
-        /// <summary>
-        ///     Writes a trace message to the CRM trace log.
-        /// </summary>
-        /// <param name="format">Message name to trace.</param>
-        /// <param name="args">Additional Arguments to put into message.</param>
+        /// <inheritdoc />
         public void Trace(string format, params object[] args)
         {
             if (args != null)

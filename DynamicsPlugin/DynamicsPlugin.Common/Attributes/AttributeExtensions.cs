@@ -12,6 +12,12 @@ namespace DynamicsPlugin.Common.Attributes
     public static class AttributeExtensions
     {
         #region CrmPluginConfigurationAttribute: Get and Create
+
+        /// <summary>
+        /// Gets the <c>CrmPluginConfigurationAttribute</c> from the given <c>type</c>.
+        /// </summary>
+        /// <param name="type">The type whose attributes to read.</param>
+        /// <returns>The <c>CrmPluginConfigurationAttribute</c>.</returns>
         public static CrmPluginConfigurationAttribute GetCrmPluginConfigurationAttribute(Type type)
         {
             var attribute =
@@ -52,6 +58,11 @@ namespace DynamicsPlugin.Common.Attributes
         #endregion
 
         #region CrmPluginRegistrationAttribute: Get and Create
+        /// <summary>
+        /// Gets the collection of <c>CrmPluginRegistrationAttribute</c> from the given <c>type</c>.
+        /// </summary>
+        /// <param name="type">The type whose attributes to read.</param>
+        /// <returns>A collection of <c>CrmPluginRegistrationAttribute</c>.</returns>
         public static IEnumerable<CrmPluginRegistrationAttribute> GetCrmPluginRegistrationAttributes(Type type)
         {
             var data = type.GetCustomAttributesData()
@@ -175,17 +186,37 @@ namespace DynamicsPlugin.Common.Attributes
         #endregion
 
         #region CrmPluginRegistrationAttribute: Conditional Checks
+        
+        /// <summary>
+        /// Determine if the entity is valid according the plugin's registration attributes.
+        /// </summary>
+        /// <param name="attributes">The plugin's registration attributes.</param>
+        /// <param name="entityName">The entity name to validate.</param>
+        /// <returns>A boolean that is <c>true</c> if valid (found in attributes), <c>false</c> if invalid (not found).</returns>
         public static bool IsValidEntity(this IEnumerable<CrmPluginRegistrationAttribute> attributes, string entityName)
         {
             return attributes.Any(a =>
                 a.EntityLogicalName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        /// <summary>
+        /// Determine if the message is valid according the plugin's registration attributes.
+        /// </summary>
+        /// <param name="attributes">The plugin's registration attributes.</param>
+        /// <param name="message">The message to validate.</param>
+        /// <returns>A boolean that is <c>true</c> if valid (found in attributes), <c>false</c> if invalid (not found).</returns>
         public static bool IsValidMessageName(this IEnumerable<CrmPluginRegistrationAttribute> attributes, string message)
         {
             return attributes.Any(a => a.Message.Equals(message, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        /// <summary>
+        /// Determine if the entity name and message are a valid combination according the plugin's registration attributes.
+        /// </summary>
+        /// <param name="attributes">The plugin's registration attributes.</param>
+        /// <param name="message">The message to validate.</param>
+        /// /// <param name="entityName">The entity name to validate.</param>
+        /// <returns>A boolean that is <c>true</c> if valid (both message and entity foundfound in attributes), <c>false</c> if invalid (not found).</returns>
         public static bool IsValidMessageAndEntityName(this IEnumerable<CrmPluginRegistrationAttribute> attributes,
             string message, string entityName)
         {

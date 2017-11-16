@@ -21,6 +21,7 @@ namespace DynamicsPlugin.Common
         /// </summary>
         public PluginBase()
         {
+            InitializePlugin();
         }
 
         /// <summary>
@@ -30,7 +31,27 @@ namespace DynamicsPlugin.Common
         {
             UnsecureConfigString = unsecureString;
             SecureConfigString = secureString;
+            InitializePlugin();
         }
+
+        /// <summary>
+        /// Initialize the plugin.
+        /// </summary>
+        /// <remarks>
+        /// The <c>InitializePlugin</c> method is executed whenever a new plugin object is created.
+        /// </remarks>
+        public virtual void InitializePlugin()
+        { }
+
+        #region Virtual and Abstract Properties (Settings)
+
+        /// <summary>
+        ///     Gets or sets the name of the child class.
+        /// </summary>
+        /// <value>The name of the child class.</value>
+        public virtual string PluginName => GetType().Name;
+
+        #endregion
 
         /// <summary>
         ///     Main entry point for he business logic that the plug-in is to execute.
@@ -90,9 +111,11 @@ namespace DynamicsPlugin.Common
 
             #region Validate Message Name and Entity Name combination
 
-            if (!registrationAttributes.IsValidMessageAndEntityName(execContext.MessageName, execContext.PrimaryEntityName))
+            if (!registrationAttributes.IsValidMessageAndEntityName(execContext.MessageName,
+                execContext.PrimaryEntityName))
                 throw new InvalidPluginExecutionException(
-                    string.Format(ResponseMessages.InvalidMessageEntityCombination, execContext.MessageName, execContext.PrimaryEntityName, PluginName));
+                    string.Format(ResponseMessages.InvalidMessageEntityCombination, execContext.MessageName,
+                        execContext.PrimaryEntityName, PluginName));
 
             #endregion
 
@@ -136,7 +159,7 @@ namespace DynamicsPlugin.Common
         /// <summary>
         ///     Placeholder for a custom plug-in implementation.
         /// </summary>
-        /// <param name="context">Context for the current plug-in.</param>
+        /// <param name="context">The local plugin context for the current plug-in.</param>
         public abstract void Execute(ILocalPluginContext context);
 
         #region Config Handling
@@ -179,16 +202,6 @@ namespace DynamicsPlugin.Common
                     throw new ArgumentOutOfRangeException(nameof(configType), configType, null);
             }
         }
-
-        #endregion
-
-        #region Virtual and Abstract Properties (Settings)
-
-        /// <summary>
-        ///     Gets or sets the name of the child class.
-        /// </summary>
-        /// <value>The name of the child class.</value>
-        public virtual string PluginName => GetType().Name;
 
         #endregion
 
