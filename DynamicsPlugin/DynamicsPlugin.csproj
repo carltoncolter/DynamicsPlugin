@@ -82,6 +82,7 @@
     <None Include="spkl\deploy-plugins.bat" />
     <None Include="spkl\deploy-webresources.bat" />
     <None Include="spkl\deploy-workflows.bat" />
+    <None Include="spkl\download-webresources.bat" />
     <None Include="spkl\earlybound.bat" />
     <None Include="spkl\instrument-plugin-code.bat" />
     <None Include="spkl\pack+import.bat" />

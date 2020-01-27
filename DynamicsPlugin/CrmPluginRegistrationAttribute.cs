@@ -1,10 +1,15 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿#if !SCRIPTSHARP
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-[ExcludeFromCodeCoverage]
+
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
 public class CrmPluginRegistrationAttribute : Attribute
 {
+
     public CrmPluginRegistrationAttribute(
         string message,
         string entityLogicalName,
@@ -14,7 +19,8 @@ public class CrmPluginRegistrationAttribute : Attribute
         string stepName,
         int executionOrder,
         IsolationModeEnum isolationModel
-    )
+
+        )
     {
         Message = message;
         EntityLogicalName = entityLogicalName;
@@ -26,18 +32,18 @@ public class CrmPluginRegistrationAttribute : Attribute
         IsolationMode = isolationModel;
         Offline = false;
         Server = true;
+
+
     }
 
     /// <summary>
+    /// 
     /// </summary>
     /// <param name="message">Message Name</param>
     /// <param name="entityLogicalName"></param>
     /// <param name="stage"></param>
     /// <param name="executionMode"></param>
-    /// <param name="filteringAttributes">
-    ///     Comma separated list of attributes that will trigger this step. Leave null for all
-    ///     attributes.
-    /// </param>
+    /// <param name="filteringAttributes">Comma separated list of attributes that will trigger this step. Leave null for all attributes.</param>
     /// <param name="stepName"></param>
     /// <param name="executionOrder"></param>
     /// <param name="isolationModel"></param>
@@ -50,13 +56,14 @@ public class CrmPluginRegistrationAttribute : Attribute
         string stepName,
         int executionOrder,
         IsolationModeEnum isolationModel
-    ) : this(message.ToString(), entityLogicalName, stage, executionMode, filteringAttributes, stepName,
-        executionOrder, isolationModel)
+
+        ) : this(message.ToString(), entityLogicalName, stage, executionMode, filteringAttributes, stepName, executionOrder, isolationModel)
     {
+
     }
 
     /// <summary>
-    ///     Create workflow activity registration
+    /// Create workflow activity registration
     /// </summary>
     /// <param name="name">Name of the Workflow Activity</param>
     /// <param name="friendlyName">Friendly name</param>
@@ -68,17 +75,16 @@ public class CrmPluginRegistrationAttribute : Attribute
         string description,
         string groupName,
         IsolationModeEnum isolationModel
-    )
+        )
     {
         Name = name;
         FriendlyName = friendlyName;
         Description = description;
         GroupName = groupName;
         IsolationMode = isolationModel;
+
     }
-
-    #region Named Properties
-
+#region Named Properties
     public string Id { get; set; }
     public string FriendlyName { get; set; }
     public string GroupName { get; set; }
@@ -95,42 +101,35 @@ public class CrmPluginRegistrationAttribute : Attribute
     public ImageTypeEnum Image1Type { get; set; }
     public ImageTypeEnum Image2Type { get; set; }
     public PluginStepOperationEnum? Action { get; set; }
+#endregion
 
-    #endregion
-
-    #region Constructor Mandatory Properties
-
-    public IsolationModeEnum IsolationMode { get; }
-    public string Message { get; }
-    public string EntityLogicalName { get; }
-    public string FilteringAttributes { get; }
-    public string Name { get; }
-    public int ExecutionOrder { get; }
-    public StageEnum? Stage { get; }
-    public ExecutionModeEnum ExecutionMode { get; }
-
-    #endregion
+#region Constructor Mandatory Properties
+    public IsolationModeEnum IsolationMode { get; private set; }
+    public string Message { get; private set; }
+    public string EntityLogicalName { get; private set; }
+    public string FilteringAttributes { get; private set; }
+    public string Name { get; private set; }
+    public int ExecutionOrder { get; private set; }
+    public StageEnum? Stage { get; private set; }
+    public ExecutionModeEnum ExecutionMode { get; private set; }
+#endregion
 }
-
 public enum ExecutionModeEnum
 {
     Asynchronous,
     Synchronous
 }
-
 public enum ImageTypeEnum
 {
     PreImage = 0,
     PostImage = 1,
     Both = 2
 }
-
 public enum IsolationModeEnum
 {
     None = 0,
     Sandbox = 1
 }
-
 public enum MessageNameEnum
 {
     AddItem,
@@ -222,16 +221,16 @@ public enum MessageNameEnum
     ValidateRecurrenceRule,
     Win
 }
-
 public enum PluginStepOperationEnum
 {
     Delete = 0,
-    Deactivate = 1
+    Deactivate = 1,
 }
-
 public enum StageEnum
 {
-    PreValidation = 10,
+    PreValidation= 10,
     PreOperation = 20,
-    PostOperation = 40
+    PostOperation =40
 }
+
+#endif

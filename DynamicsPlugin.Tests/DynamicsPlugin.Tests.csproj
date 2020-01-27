@@ -62,7 +62,7 @@
     </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="spkl.fakes, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\spkl.fakes.1.0.5\lib\spkl.fakes.dll</HintPath>
+      <HintPath>..\packages\spkl.fakes.1.0.6\lib\spkl.fakes.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Activities" />
