@@ -61,18 +61,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Attributes\AttributeExtensions.cs" />
+    <Compile Include="Common\Attributes\CrmPluginConfigurationAttribute.cs" />
+    <Compile Include="Common\Constants.cs" />
+    <Compile Include="Common\iCal.cs" />
+    <Compile Include="Common\ILocalPluginContext.cs" />
+    <Compile Include="Common\LocalPluginContext.cs" />
+    <Compile Include="Common\PluginBase.cs" />
+    <Compile Include="Common\Utilities.cs" />
     <Compile Include="Config\ConfigSetting.cs" />
     <Compile Include="Config\IPluginConfig.cs" />
     <Compile Include="Config\ConfigType.cs" />
     <Compile Include="Config\XmlConfig.cs" />
     <Compile Include="Config\JsonConfig.cs" />
     <Compile Include="CrmPluginRegistrationAttribute.cs" />
-    <Compile Include="DynamicsPlugin.Common\Attributes\AttributeExtensions.cs" />
-    <Compile Include="DynamicsPlugin.Common\Attributes\CrmPluginConfigurationAttribute.cs" />
-    <Compile Include="DynamicsPlugin.Common\Constants.cs" />
-    <Compile Include="DynamicsPlugin.Common\ILocalPluginContext.cs" />
-    <Compile Include="DynamicsPlugin.Common\LocalPluginContext.cs" />
-    <Compile Include="DynamicsPlugin.Common\PluginBase.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

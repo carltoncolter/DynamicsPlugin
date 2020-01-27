@@ -92,32 +92,37 @@ namespace DynamicsPlugin.Common
             var registrationAttributes = AttributeExtensions.GetCrmPluginRegistrationAttributes(GetType()).ToList();
             var execContext = localContext.PluginExecutionContext;
 
-            #region Validate Primary EntityName (if specified)
+            if (registrationAttributes.Count > 0)
+            {
 
-            if (!registrationAttributes.IsValidEntity(execContext.PrimaryEntityName))
-                throw new InvalidPluginExecutionException(
-                    string.Format(ResponseMessages.InvalidEntity, execContext.PrimaryEntityName,
-                        PluginName));
+                #region Validate Primary EntityName (if specified)
 
-            #endregion
+                if (!registrationAttributes.IsValidEntity(execContext.PrimaryEntityName))
+                    throw new InvalidPluginExecutionException(
+                        string.Format(ResponseMessages.InvalidEntity, execContext.PrimaryEntityName,
+                            PluginName));
 
-            #region Validate Message Names
+                #endregion
 
-            if (!registrationAttributes.IsValidMessageName(execContext.MessageName))
-                throw new InvalidPluginExecutionException(
-                    string.Format(ResponseMessages.InvalidMessageName, execContext.MessageName, PluginName));
+                #region Validate Message Names
 
-            #endregion
+                if (!registrationAttributes.IsValidMessageName(execContext.MessageName))
+                    throw new InvalidPluginExecutionException(
+                        string.Format(ResponseMessages.InvalidMessageName, execContext.MessageName, PluginName));
 
-            #region Validate Message Name and Entity Name combination
+                #endregion
 
-            if (!registrationAttributes.IsValidMessageAndEntityName(execContext.MessageName,
-                execContext.PrimaryEntityName))
-                throw new InvalidPluginExecutionException(
-                    string.Format(ResponseMessages.InvalidMessageEntityCombination, execContext.MessageName,
-                        execContext.PrimaryEntityName, PluginName));
+                #region Validate Message Name and Entity Name combination
 
-            #endregion
+                if (!registrationAttributes.IsValidMessageAndEntityName(execContext.MessageName,
+                    execContext.PrimaryEntityName))
+                    throw new InvalidPluginExecutionException(
+                        string.Format(ResponseMessages.InvalidMessageEntityCombination, execContext.MessageName,
+                            execContext.PrimaryEntityName, PluginName));
+
+                #endregion
+
+            }
 
             try
             {
